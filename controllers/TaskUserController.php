@@ -93,8 +93,18 @@ class TaskUserController extends Controller
       return $this->redirect(['task/my']);
     }
 
-    $users = User::find()->where(['<>', 'id', Yii::$app->user->id])
-      ->select('username')->indexBy('id')->column();
+    // Подзапрос для нахождения пользователей, которым уже назначена эта задача
+    $taskUsers = TaskUser::find()->where(['=', 'task_id', $taskId])
+      ->select('user_id')->column();
+
+    // Запрос для нахождения пользователей, не являющихся создателями данной задачи,
+    // и которым данная задача еще не назначена
+    $users = User::find()->where([
+      'and',
+      ['<>', 'id', Yii::$app->user->id],
+      ['not in', 'id', $taskUsers]
+    ])->select('username')->indexBy('id')->column();
+
 
     return $this->render('create', [
       'model' => $model,
