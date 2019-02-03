@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\query\TaskQuery;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -105,10 +106,10 @@ class Task extends \yii\db\ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return \app\models\query\TaskQuery the active query used by this AR class.
+     * @return TaskQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new \app\models\query\TaskQuery(get_called_class());
+        return new TaskQuery(get_called_class());
     }
 }

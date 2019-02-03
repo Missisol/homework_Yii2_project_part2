@@ -148,21 +148,21 @@ class UserController extends Controller
     $user->created_at = time();
     $user->save();
 
-    $user1 = User::findOne(1);
+    $user1 = User::findOne(77);
     $task1 = new Task();
     $task1->title = 'First';
     $task1->description = 'dgdgdgdgdgd';
     $task1->created_at = time();
     $task1->link(Task::CREATOR_TASK, $user1);
 
-    $user2 = User::findOne(2);
+    $user2 = User::findOne(78);
     $task2 = new Task();
     $task2->title = 'Second';
     $task2->description = 'ggggggg';
     $task2->created_at = time();
     $task2->link(Task::CREATOR_TASK, $user2);
 
-    $user3 = User::findOne(3);
+    $user3 = User::findOne(79);
     $task3 = new Task();
     $task3->title = 'Third';
     $task3->description = 'ddddddddddddd';
@@ -174,19 +174,18 @@ class UserController extends Controller
     User::find()->joinWith(User::RELATION_CREATED_TASKS)->all();
 
 
-    $user4 = new User();
-    $user4->username = 'User4';
-    $user4->password_hash = 'hhhhhhhhhhh';
-    $user4->creator_id = '2';
-    $user4->created_at = time();
-    $user4->save();
     $user5 = new User();
-    $user5->username = 'User5';
-    $user5->password_hash = 'aaaaaaaaaaaaaaa';
-    $user5->creator_id = '3';
+    $user5->username = 'user_new';
+    $user5->password_hash = 'hhhhhhhhhhh';
+    $user5->creator_id = '2';
     $user5->created_at = time();
     $user5->save();
-    $user4->link('accessedTask', $user5);
+    $task5 = new Task();
+    $task5->title = 'Third';
+    $task5->description = 'ddddddddddddd';
+    $task5->created_at = time();
+    $task5->link(Task::CREATOR_TASK, $user5);
+    $user5->link('accessedTask', $task5);
 
     return $this->render('test');
   }
