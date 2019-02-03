@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Task;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -7,6 +8,7 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Tasks';
+$this->params['breadcrumbs'][] = ['label' => 'Tasks', 'url' => ['my']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="task-index">
@@ -23,15 +25,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'title',
             'description:ntext',
-            'creator_id',
-            'updater_id',
-            //'created_at',
-            //'updated_at',
+            'created_at:datetime',
+            'updated_at:datetime',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{share} {view} {update} {delete}',
+                'buttons' => [
+                    'share' => function ($url, Task $model, $key) {
+                          $icon = \yii\bootstrap\Html::icon('share');
+                              return Html::a($icon, ['task-user/create', 'taskId' => $model->id]);
+                    }
+                ],
+            ],
         ],
     ]); ?>
     <?php Pjax::end(); ?>
