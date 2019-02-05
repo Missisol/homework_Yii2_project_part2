@@ -118,9 +118,18 @@ class TaskUserController extends Controller
    */
   public function actionDelete($id)
   {
-    $this->findModel($id)->delete();
+    $taskId = $this->findModel($id)->task_id;
+    $userId = Task::findOne($taskId)->creator_id;
 
-    return $this->redirect(['index']);
+    if ($userId == Yii::$app->user->id) {
+      $this->findModel($id)->delete();
+
+      Yii::$app->session->setFlash('success', 'Access deleted successfully');
+
+      return $this->redirect(['task/' . $taskId]);
+    }
+
+    throw new NotFoundHttpException('The requested page does not exist.');
   }
 
   /**

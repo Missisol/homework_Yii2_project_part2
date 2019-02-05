@@ -2,10 +2,12 @@
 
 namespace app\controllers;
 
+use app\models\TaskUser;
 use app\models\User;
 use Yii;
 use app\models\Task;
 use yii\data\ActiveDataProvider;
+use yii\debug\UserswitchAsset;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -103,8 +105,15 @@ class TaskController extends Controller
    */
   public function actionView($id)
   {
+    $query = TaskUser::find()->where(['task_id' => $id]);
+
+    $dataProvider = new ActiveDataProvider([
+      'query' => $query,
+    ]);
+
     return $this->render('view', [
       'model' => $this->findModel($id),
+      'dataProvider' => $dataProvider,
     ]);
   }
 
