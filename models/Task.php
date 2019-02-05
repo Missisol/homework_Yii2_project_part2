@@ -21,18 +21,21 @@ use yii\behaviors\TimestampBehavior;
  * @property User $creator
  * @property User $updater
  * @property TaskUser[] $taskUsers
+ * @property User[] $sharedUsers
  */
 class Task extends \yii\db\ActiveRecord
 {
   const CREATOR_TASK = 'creator';
+  const RELATION_TASK_USERS = 'taskUsers';
+  const RELATION_SHARED_USERS = 'sharedUsers';
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'task';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function tableName()
+  {
+    return 'task';
+  }
 
   /**
    * @return array
@@ -49,67 +52,76 @@ class Task extends \yii\db\ActiveRecord
     ];
   }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['title', 'description'], 'required'],
-            [['description'], 'string'],
-            [['creator_id', 'updater_id', 'created_at', 'updated_at'], 'integer'],
-            [['title'], 'string', 'max' => 255],
-            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator_id' => 'id']],
-            [['updater_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updater_id' => 'id']],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function rules()
+  {
+    return [
+      [['title', 'description'], 'required'],
+      [['description'], 'string'],
+      [['creator_id', 'updater_id', 'created_at', 'updated_at'], 'integer'],
+      [['title'], 'string', 'max' => 255],
+      [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator_id' => 'id']],
+      [['updater_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updater_id' => 'id']],
+    ];
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'title' => 'Title',
-            'description' => 'Description',
-            'creator_id' => 'Creator ID',
-            'updater_id' => 'Updater ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function attributeLabels()
+  {
+    return [
+      'id' => 'ID',
+      'title' => 'Title',
+      'description' => 'Description',
+      'creator_id' => 'Creator ID',
+      'updater_id' => 'Updater ID',
+      'created_at' => 'Created At',
+      'updated_at' => 'Updated At',
+    ];
+  }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCreator()
-    {
-        return $this->hasOne(User::className(), ['id' => 'creator_id']);
-    }
+  /**
+   * @return \yii\db\ActiveQuery
+   */
+  public function getCreator()
+  {
+    return $this->hasOne(User::className(), ['id' => 'creator_id']);
+  }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUpdater()
-    {
-        return $this->hasOne(User::className(), ['id' => 'updater_id']);
-    }
+  /**
+   * @return \yii\db\ActiveQuery
+   */
+  public function getUpdater()
+  {
+    return $this->hasOne(User::className(), ['id' => 'updater_id']);
+  }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTaskUsers()
-    {
-        return $this->hasMany(TaskUser::className(), ['task_id' => 'id']);
-    }
+  /**
+   * @return \yii\db\ActiveQuery
+   */
+  public function getTaskUsers()
+  {
+    return $this->hasMany(TaskUser::className(), ['task_id' => 'id']);
+  }
 
-    /**
-     * {@inheritdoc}
-     * @return TaskQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new TaskQuery(get_called_class());
-    }
+  /**
+   * @return \yii\db\ActiveQuery
+   */
+  public function getSharedUsers()
+  {
+    return $this->hasMany(User::className(), ['id' => 'user_id'])
+      ->via(self::RELATION_TASK_USERS);
+  }
+
+  /**
+   * {@inheritdoc}
+   * @return TaskQuery the active query used by this AR class.
+   */
+  public static function find()
+  {
+    return new TaskQuery(get_called_class());
+  }
 }
