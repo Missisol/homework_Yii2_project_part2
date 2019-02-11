@@ -49,8 +49,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'label' => 'User name',
         'attribute' => 'title',
         'content' => function (TaskUser $model) {
-          $user = $model->getUser()->select('username')->column();
-          return join($user);
+          $user = $model->user->username;
+          return $user;
         }
       ],
       [

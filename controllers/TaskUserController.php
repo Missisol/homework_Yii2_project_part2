@@ -69,17 +69,24 @@ class TaskUserController extends Controller
     }
 
     // Подзапрос для нахождения пользователей, которым уже назначена эта задача
-    $taskUsers = TaskUser::find()
+    // SELECT `user_id` FROM `task-user` WHERE `task_id` = $taskId
+//    $taskUsers = TaskUser::find()
+//      ->where(['=', 'task_id', $taskId])
+//      ->select('user_id')->column();
+
+    $query = TaskUser::find()
       ->where(['=', 'task_id', $taskId])
-      ->select('user_id')->column();
+      ->select('user_id');
+
 
     // Запрос для нахождения пользователей, не являющихся создателями данной задачи,
     // и которым данная задача еще не назначена
+    // SELECT `username` FROM `users` WHERE `id` <> $id AND `id` NOT IN [$taskUsers]
     $users = User::find()
       ->where([
         'and',
         ['<>', 'id', Yii::$app->user->id],
-        ['not in', 'id', $taskUsers]
+        ['not in', 'id', $query]
       ])
       ->select('username')->indexBy('id')->column();
 
@@ -118,15 +125,17 @@ class TaskUserController extends Controller
    */
   public function actionDelete($id)
   {
-    $taskId = $this->findModel($id)->task_id;
-    $userId = Task::findOne($taskId)->creator_id;
+//    $taskId = $this->findModel($id)->task_id;
+//    $userId = Task::findOne($taskId)->creator_id;
+    $userId = $this->findModel($id)->task->creator_id;
+    $model = $this->findModel($id);
 
     if ($userId == Yii::$app->user->id) {
       $this->findModel($id)->delete();
 
       Yii::$app->session->setFlash('success', 'Access deleted successfully');
 
-      return $this->redirect(['task/' . $taskId]);
+      return $this->redirect(['task/view', 'id' => $model->task_id]);
     }
 
     throw new NotFoundHttpException('The requested page does not exist.');

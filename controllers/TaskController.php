@@ -105,7 +105,8 @@ class TaskController extends Controller
    */
   public function actionView($id)
   {
-    $query = TaskUser::find()->where(['task_id' => $id]);
+//   вместо $query = TaskUser::find()->where(['task_id' => $id]);
+    $query = $this->findModel($id)->getTaskUsers();
 
     $dataProvider = new ActiveDataProvider([
       'query' => $query,

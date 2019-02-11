@@ -33,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'label' => 'Task Author Name',
         'attribute' => 'title',
         'content' => function (Task $model) {
-          $user = $model->getCreator()->select('username')->column();
-          return join($user);
+          $user = $model->creator->username;
+          return $user;
         }
       ],
       'created_at:datetime',
